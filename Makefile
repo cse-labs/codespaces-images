@@ -1,18 +1,16 @@
-.PHONY: help all scripts dind k3d k3d-rust k3d-wasm java
+.PHONY: help all scripts dind k3d k3d-rust k3d-wasm jumpbox
 
 help :
 	@echo "Usage:"
 	@echo "   make all        - build images images"
-	@echo "   make scripts    - update scripts from vscode repo"
 	@echo "   make dind       - build Docker-in-Docker image (dind)"
+	@echo "   make jumpbox    - build jumpbox k8s image"
 	@echo "   make k3d        - build k3d image"
 	@echo "   make k3d-rust   - build k3d Rust image"
 	@echo "   make k3d-wasm   - build k3d WebAssembly image"
-	@echo "   make java       - build java Codespaces image"
-	@echo "   make jumpbox    - build jumpbox k8s image"
+	@echo "   make scripts    - update scripts from vscode repo"
 
-
-all : jumpbox k3d-rust k3d-wasm k3d dind java
+all : jumpbox k3d-rust k3d-wasm k3d dind
 
 scripts :
 	@docker pull mcr.microsoft.com/vscode/devcontainers/dotnet
@@ -39,22 +37,16 @@ scripts :
 	@curl -o library-scripts/dapr-debian.sh -fsSL https://raw.githubusercontent.com/dapr/cli/master/install/install.sh
 
 dind : scripts
-	@docker build . --target dind -t ghcr.io/retaildevcrews/dind:beta
+	@docker build . --target dind -t ghcr.io/cse-labs/dind:beta
 
 k3d : scripts
-	@docker build . --target k3d -t ghcr.io/retaildevcrews/k3d:beta
-	@docker build . --target kind -t ghcr.io/retaildevcrews/kind:beta
+	@docker build . --target k3d -t ghcr.io/cse-labs/k3d:beta
 
 k3d-rust : scripts
-	@docker build . --target k3d-rust -t ghcr.io/retaildevcrews/k3d-rust:beta
-	@docker build . --target kind-rust -t ghcr.io/retaildevcrews/kind-rust:beta
+	@docker build . --target k3d-rust -t ghcr.io/cse-labs/k3d-rust:beta
 
 k3d-wasm : scripts
-	@docker build . --target k3d-wasm -t ghcr.io/retaildevcrews/k3d-wasm:beta
-	@docker build . --target kind-wasm -t ghcr.io/retaildevcrews/kind-wasm:beta
-
-java : scripts
-	@docker build . --target ngsa-java -t  ghcr.io/retaildevcrews/ngsa-java-codespaces:beta
+	@docker build . --target k3d-wasm -t ghcr.io/cse-labs/k3d-wasm:beta
 
 jumpbox :
-	@docker build . --target jumpbox -t ghcr.io/retaildevcrews/jumpbox:latest
+	@docker build . --target jumpbox -t ghcr.io/cse-labs/jumpbox:latest
