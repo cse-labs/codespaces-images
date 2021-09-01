@@ -1,0 +1,21 @@
+{
+	"name": "codespaces-images",
+	"remoteUser": "vscode",
+	"dockerFile": "Dockerfile",
+	"runArgs": [
+		"--init",
+		"--privileged"
+	],
+	"overrideCommand": false,
+	"forwardPorts": [],
+
+	// Set container specific settings
+	"settings": {
+		"terminal.integrated.defaultProfile.linux": "zsh"
+	},
+	// Install extensions
+	"extensions": [
+		"davidanson.vscode-markdownlint",
+		"ms-azuretools.vscode-docker"
+	]
+}
