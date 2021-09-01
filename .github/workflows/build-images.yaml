@@ -10,7 +10,7 @@ on:
       - main
 
     paths:
-    - '.github/workflows/build-kind.yaml'
+    - '.github/workflows/build-images.yaml'
     - 'Dockerfile'
     - 'local-scripts/**'
     - 'library-scripts/**'
@@ -71,4 +71,4 @@ jobs:
         docker push -a ghcr.io/cse-labs/k3d
         docker push -a ghcr.io/cse-labs/k3d-rust
         docker push -a ghcr.io/cse-labs/k3d-wasm
-        docker push -a ghcr.io/cse-labs/jumpbox:latest
+        docker push -a ghcr.io/cse-labs/jumpbox
