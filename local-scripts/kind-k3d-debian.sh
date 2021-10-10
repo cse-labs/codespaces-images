@@ -63,7 +63,7 @@ fi
 if [ "${INSTALL_K3D}" == "true" ]; then
     echo "Installing k3d ..."
 
-    wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
+    wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | TAG=v4.4.8 bash
 fi
 
 echo "Installing K9s ..."
