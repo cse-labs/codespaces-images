@@ -8,7 +8,7 @@ CMD [ "/bin/sh", "-c", "trap : TERM INT; sleep 9999999999d & wait" ]
 RUN apk update && apk add bash curl nano jq py-pip && \
     pip3 install --upgrade pip setuptools httpie && \
     echo "alias ls='ls --color=auto'" >> /root/.profile && \
-    echo "alias ll='ls -lF'" >> /root/.profile && \
+    echo "alias ll='ls -alF'" >> /root/.profile && \
     echo "alias la='ls -alF'" >> /root/.profile
 
 ###### Build Docker-in-Docker image
@@ -20,6 +20,9 @@ ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
+# configure apt-get
+ENV DEBIAN_FRONTEND noninteractive
+
 # copy the stup scripts to the image
 COPY library-scripts/*.sh /scripts/
 COPY local-scripts/*.sh /scripts/
@@ -28,14 +31,13 @@ COPY local-scripts/*.sh /scripts/
 # We intentionally create multiple layers so that they pull in parallel which improves startup time
 ###
 
-RUN export DEBIAN_FRONTEND=noninteractive && apt-get update
-
+RUN apt-get update
 RUN apt-get -y install --no-install-recommends apt-utils dialog
 RUN apt-get -y install --no-install-recommends apt-transport-https ca-certificates
 RUN apt-get -y install --no-install-recommends curl git wget
 RUN apt-get -y install --no-install-recommends software-properties-common make build-essential
 RUN apt-get -y install --no-install-recommends jq bash-completion
-RUN apt-get -y install --no-install-recommends gettext iputils-ping dnsutils 
+RUN apt-get -y install --no-install-recommends gettext iputils-ping dnsutils
 
 # use scripts from: https://github.com/microsoft/vscode-dev-containers/tree/main/script-library
 # uncomment this if you use a base image other than a Codespaces image
@@ -48,21 +50,12 @@ RUN /bin/bash /scripts/dapr-debian.sh
 # run local scripts
 RUN /bin/bash /scripts/dind-debian.sh
 
-RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
-    && echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
-    && echo "👋 Welcome to the Docker-in-Docker image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+# install dotnet 5 for tool support
+RUN apt-get -y install --no-install-recommends dotnet-sdk-5.0
 
-VOLUME [ "/var/lib/docker" ]
-
-# Setting the ENTRYPOINT to docker-init.sh will start up the Docker Engine 
-# inside the container "overrideCommand": false is set in devcontainer.json. 
-# The script will also execute CMD if you need to alter startup behaviors.
-ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
-CMD [ "sleep", "infinity" ]
-
-RUN apt-get update -y
-RUN apt-get upgrade -y
-RUN apt-get autoremove -y && \
+RUN apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get autoremove -y && \
     apt-get clean -y
 
 WORKDIR /home/${USERNAME}
@@ -73,6 +66,20 @@ RUN dotnet tool install -g webvalidate
 
 USER root
 
+# customize first run message
+RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
+    && echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
+    && echo "👋 Welcome to the Docker-in-Docker image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+
+# docker pipe
+VOLUME [ "/var/lib/docker" ]
+
+# Setting the ENTRYPOINT to docker-init.sh will start up the Docker Engine 
+# inside the container "overrideCommand": false is set in devcontainer.json. 
+# The script will also execute CMD if you need to alter startup behaviors.
+ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
+CMD [ "sleep", "infinity" ]
+
 #######################
 ### Build k3d image from Docker-in-Docker
 FROM dind as k3d
@@ -82,10 +89,12 @@ ARG USERNAME=vscode
 # install kind / k3d
 RUN /bin/bash /scripts/kind-k3d-debian.sh
 
+# customize first run message
 RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
     && echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
     && echo "👋 Welcome to the k3d Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
 
+# update the container
 RUN apt-get update -y
 RUN apt-get upgrade -y
 RUN apt-get autoremove -y && \
@@ -151,6 +160,7 @@ RUN rustup target add x86_64-unknown-linux-musl
 
 USER root
 
+# customize first run message
 RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
     && echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
     && echo "👋 Welcome to the k3d and Rust Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
@@ -189,6 +199,7 @@ RUN apt-get upgrade -y
 RUN apt-get autoremove -y && \
     apt-get clean -y
 
+# customize first run message
 RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
     && echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
     && echo "👋 Welcome to the k3d Rust WebAssembly Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
