@@ -5,8 +5,7 @@ WORKDIR /root
 
 CMD [ "/bin/sh", "-c", "trap : TERM INT; sleep 9999999999d & wait" ]
 
-RUN apk update && apk add bash curl nano jq py-pip && \
-    pip3 install --upgrade pip setuptools httpie && \
+RUN apk update && apk add bash curl nano jq httpie && \
     echo "alias ls='ls --color=auto'" >> /root/.profile && \
     echo "alias ll='ls -alF'" >> /root/.profile && \
     echo "alias la='ls -alF'" >> /root/.profile
@@ -62,7 +61,11 @@ WORKDIR /home/${USERNAME}
 USER ${USERNAME}
 
 # install https://aka.ms/webv
-RUN dotnet tool install -g webvalidate
+RUN dotnet tool install -g webvalidate && \
+    git config --global core.whitespace blank-at-eol,blank-at-eof,space-before-tab && \
+    git config --global pull.rebase false && \
+    git config --global init.defaultbranch main && \
+    git config --global fetch.prune true
 
 USER root
 
