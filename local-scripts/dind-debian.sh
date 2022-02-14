@@ -53,8 +53,6 @@ curl -Lo /usr/local/bin/jp https://github.com/jmespath/jp/releases/download/${JP
 chmod +x /usr/local/bin/jp
 
 echo "Updating config ..."
-echo -e 'export PATH=$PATH:$HOME/.dotnet/tools' | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
-
 echo -e "alias k='kubectl'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
 echo -e "alias kga='kubectl get all'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
 echo -e "alias kgaa='kubectl get all --all-namespaces'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
@@ -68,6 +66,9 @@ echo -e "alias kje='kubectl exec -it jumpbox -- '" | tee -a /etc/zsh/zshrc >> /e
 echo -e "alias ipconfig='ip -4 a show eth0 | grep inet | sed \"s/inet//g\" | sed \"s/ //g\" | cut -d / -f 1'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
 echo -e "export GO111MODULE=on" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
 echo -e 'export PIP=$(ipconfig | tail -n 1)' | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
+
+# zsh only
+echo -e "compinit" >> /etc/zsh/zshrc
 
 # bash only
 echo -e "complete -F __start_kubectl k" >> /etc/bash.bashrc
