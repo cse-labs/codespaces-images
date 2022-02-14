@@ -21,14 +21,22 @@ ARG USER_GID=$USER_UID
 
 # configure apt-get
 ENV DEBIAN_FRONTEND noninteractive
-
-# copy the stup scripts to the image
-COPY library-scripts/*.sh /scripts/
-COPY local-scripts/*.sh /scripts/
+ENV PATH $PATH:/usr/local/go/bin:/home/${USERNAME}/go/bin:/home/${USERNAME}/.local/bin:/home/${USERNAME}/.dotnet/tools
 
 ###
 # We intentionally create multiple layers so that they pull in parallel which improves startup time
 ###
+
+RUN mkdir -p /home/${USERNAME}/.local/bin && \
+    mkdir -p /home/${USERNAME}/.dotnet/tools && \
+    mkdir -p /home/${USERNAME}/.dapr/bin && \
+    mkdir -p /home/${USERNAME}/.ssh && \
+    mkdir -p /home/${USERNAME}/.oh-my-zsh/completions && \
+    mkdir -p /home/${USERNAME}/go/bin
+
+# copy the stup scripts to the image
+COPY library-scripts/*.sh /scripts/
+COPY local-scripts/*.sh /scripts/
 
 RUN apt-get update
 RUN apt-get -y install --no-install-recommends apt-utils dialog
@@ -46,13 +54,28 @@ RUN /bin/bash /scripts/kubectl-helm-debian.sh
 RUN /bin/bash /scripts/azcli-debian.sh
 RUN /bin/bash /scripts/dapr-debian.sh
 
+# install Radius
+RUN wget -q "https://get.radapp.dev/tools/rad/install.sh" -O - | /bin/bash
+
 # run local scripts
 RUN /bin/bash /scripts/dind-debian.sh
 
+# install GoDaddy CA certs
+RUN wget -o /usr/local/share/ca-certificates/gd_bundle-g2-g1.crt https://certs.godaddy.com/repository/gd_bundle-g2-g1.crt && \
+    wget -o /usr/local/share/ca-certificates/gd_bundle-g3-g1.crt https://certs.godaddy.com/repository/gd_bundle-g3-g1.crt && \
+    wget -o /usr/local/share/ca-certificates/gd_bundle-g4-g1.crt https://certs.godaddy.com/repository/gd_bundle-g4-g1.crt && \
+    update-ca-certificates
+
+# install go
+RUN wget https://go.dev/dl/go1.17.6.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go1.17.6.linux-amd64.tar.gz && \
+    rm -f go1.17.6.linux-amd64.tar.gz
+
 # install dotnet 5 for tool support
+# dotnet 6 is already installed
 RUN apt-get -y install --no-install-recommends dotnet-sdk-5.0
 
-RUN apt-get update -y && \
+RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get autoremove -y && \
     apt-get clean -y
@@ -65,9 +88,14 @@ RUN dotnet tool install -g webvalidate && \
     git config --global core.whitespace blank-at-eol,blank-at-eof,space-before-tab && \
     git config --global pull.rebase false && \
     git config --global init.defaultbranch main && \
-    git config --global fetch.prune true
+    git config --global fetch.prune true && \
+    git config --global core.pager more && \
+    git config --global diff.colorMoved zebra
 
 USER root
+
+# change ownership of the home directory
+RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
 # customize first run message
 RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
@@ -89,8 +117,14 @@ FROM dind as k3d
 
 ARG USERNAME=vscode
 
+ENV DEBIAN_FRONTEND noninteractive
+ENV PATH $PATH:/usr/local/go/bin:/usr/local/istio/bin:/home/${USERNAME}/go/bin:/home/${USERNAME}/.local/bin:/home/${USERNAME}/.dotnet/tools:/home/${USERNAME}/.dapr/bin
+
 # install kind / k3d
 RUN /bin/bash /scripts/kind-k3d-debian.sh
+
+# change ownership of the home directory
+RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
 # customize first run message
 RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
@@ -98,11 +132,10 @@ RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your 
     && echo "👋 Welcome to the k3d Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
 
 # update the container
-RUN apt-get update -y
+RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get autoremove -y && \
     apt-get clean -y
-
 
 #######################
 ### Build k3d-rust image from k3d
@@ -110,7 +143,9 @@ FROM k3d as k3d-rust
 
 ARG USERNAME=vscode
 
-RUN export DEBIAN_FRONTEND=noninteractive && apt-get update
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update
 
 RUN apt-get install -y --no-install-recommends pkg-config libssl-dev
 RUN apt-get install -y --no-install-recommends gcc libc6-dev
@@ -119,6 +154,8 @@ RUN apt-get install -y --no-install-recommends python
 RUN apt-get install -y --no-install-recommends clang
 RUN apt-get install -y --no-install-recommends cmake
 RUN apt-get install -y --no-install-recommends musl-tools
+
+RUN apt-get upgrade -y
 
 # install rust
 ENV RUSTUP_HOME=/usr/local/rustup \
@@ -144,7 +181,7 @@ RUN set -eux; \
     rm rustup-init; \
     chmod -R a+w $RUSTUP_HOME $CARGO_HOME;
 
-RUN apt-get update -y
+RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get autoremove -y && \
     apt-get clean -y
@@ -163,6 +200,9 @@ RUN rustup target add x86_64-unknown-linux-musl
 
 USER root
 
+# change ownership of the home directory
+RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
+
 # customize first run message
 RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
     && echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
@@ -174,7 +214,8 @@ FROM k3d-rust as k3d-wasm
 
 ARG USERNAME=vscode
 
-RUN export DEBIAN_FRONTEND=noninteractive && apt-get update
+RUN apt-get update
+RUN apt-get upgrade -y
 
 WORKDIR /home/${USERNAME}
 USER ${USERNAME}
@@ -197,10 +238,13 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash - && \
     apt-get update && \
     apt-get install -y --no-install-recommends nodejs
 
-RUN apt-get update -y
+RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get autoremove -y && \
     apt-get clean -y
+
+# change ownership of the home directory
+RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
 # customize first run message
 RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
