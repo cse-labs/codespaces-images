@@ -80,6 +80,9 @@ RUN apt-get update && \
     apt-get autoremove -y && \
     apt-get clean -y
 
+# change ownership of the home directory
+RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
+
 WORKDIR /home/${USERNAME}
 USER ${USERNAME}
 
@@ -93,9 +96,6 @@ RUN dotnet tool install -g webvalidate && \
     git config --global diff.colorMoved zebra
 
 USER root
-
-# change ownership of the home directory
-RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
 # customize first run message
 RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
@@ -145,7 +145,8 @@ ARG USERNAME=vscode
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update
+RUN apt-get update && \
+    apt-get upgrade -y
 
 RUN apt-get install -y --no-install-recommends pkg-config libssl-dev
 RUN apt-get install -y --no-install-recommends gcc libc6-dev
@@ -154,8 +155,6 @@ RUN apt-get install -y --no-install-recommends python
 RUN apt-get install -y --no-install-recommends clang
 RUN apt-get install -y --no-install-recommends cmake
 RUN apt-get install -y --no-install-recommends musl-tools
-
-RUN apt-get upgrade -y
 
 # install rust
 ENV RUSTUP_HOME=/usr/local/rustup \
@@ -186,6 +185,9 @@ RUN apt-get upgrade -y
 RUN apt-get autoremove -y && \
     apt-get clean -y
 
+# change ownership of the home directory
+RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
+
 WORKDIR /home/${USERNAME}
 USER ${USERNAME}
 
@@ -200,9 +202,6 @@ RUN rustup target add x86_64-unknown-linux-musl
 
 USER root
 
-# change ownership of the home directory
-RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
-
 # customize first run message
 RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
     && echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
@@ -216,6 +215,9 @@ ARG USERNAME=vscode
 
 RUN apt-get update
 RUN apt-get upgrade -y
+
+# change ownership of the home directory
+RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
 WORKDIR /home/${USERNAME}
 USER ${USERNAME}
