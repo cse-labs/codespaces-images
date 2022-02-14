@@ -232,7 +232,7 @@ RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh && \
 USER root
 
 # install node
-RUN RUN /bin/bash /scripts/node-debian.sh
+RUN /bin/bash /scripts/node-debian.sh
 
 RUN apt-get update
 RUN apt-get upgrade -y
