@@ -52,6 +52,7 @@ RUN apt-get -y install --no-install-recommends gettext iputils-ping dnsutils
 RUN /bin/bash /scripts/docker-in-docker-debian.sh
 RUN /bin/bash /scripts/kubectl-helm-debian.sh
 RUN /bin/bash /scripts/azcli-debian.sh
+RUN /bin/bash /scripts/go-debian.sh
 RUN /bin/bash /scripts/dapr-debian.sh
 
 # install Radius
@@ -65,11 +66,6 @@ RUN wget -o /usr/local/share/ca-certificates/gd_bundle-g2-g1.crt https://certs.g
     wget -o /usr/local/share/ca-certificates/gd_bundle-g3-g1.crt https://certs.godaddy.com/repository/gd_bundle-g3-g1.crt && \
     wget -o /usr/local/share/ca-certificates/gd_bundle-g4-g1.crt https://certs.godaddy.com/repository/gd_bundle-g4-g1.crt && \
     update-ca-certificates
-
-# install go
-RUN wget https://go.dev/dl/go1.17.6.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go1.17.6.linux-amd64.tar.gz && \
-    rm -f go1.17.6.linux-amd64.tar.gz
 
 # install dotnet 5 for tool support
 # dotnet 6 is already installed
@@ -236,9 +232,7 @@ RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh && \
 USER root
 
 # install node
-RUN curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash - && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends nodejs
+RUN RUN /bin/bash /scripts/node-debian.sh
 
 RUN apt-get update
 RUN apt-get upgrade -y
