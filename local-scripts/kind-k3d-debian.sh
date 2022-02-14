@@ -77,9 +77,9 @@ mv ./k9s/k9s /usr/local/bin/k9s
 rm -rf k9s.tar.gz k9s
 
 echo "Installing FluxCD ..."
-FLUX_VERSION=$(basename "$(curl -fsSL -o /dev/null -w "%{url_effective}" https://github.com/fluxcd/flux/releases/latest)")
-curl -Lo /usr/local/bin/fluxctl https://github.com/fluxcd/flux/releases/download/${FLUX_VERSION}/fluxctl_linux_${ARCHITECTURE}
-chmod 755 /usr/local/bin/fluxctl
+curl -s https://fluxcd.io/install.sh | bash
+chmod +x /usr/local/bin/flux
+flux completion zsh > /home/${USERNAME}/.oh-my-zsh/completions/_flux
 
 echo "Installing linkerd ..."
 rm -f /usr/bin/linkerd
@@ -110,10 +110,6 @@ mkdir -p /grafana
 chown -R 472:0 /grafana
 mkdir -p /prometheus
 chown -R 65534:65534 /prometheus
-
-echo "Updating config ..."
-echo -e 'export PATH=$PATH:/usr/local/istio/bin:$HOME/.dapr/bin' | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
-echo -e "export FLUX_FORWARD_NAMESPACE=flux-cd" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
 
 if ! type docker > /dev/null 2>&1; then
     echo -e '\n(*) Warning: The docker command was not found.\n\nYou can use one of the following scripts to install it:\n\nhttps://github.com/microsoft/vscode-dev-containers/blob/main/script-library/docs/docker-in-docker.md\n\nor\n\nhttps://github.com/microsoft/vscode-dev-containers/blob/main/script-library/docs/docker.md'
