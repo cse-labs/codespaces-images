@@ -21,7 +21,7 @@ ARG USER_GID=$USER_UID
 
 # configure apt-get
 ENV DEBIAN_FRONTEND noninteractive
-ENV PATH $PATH:/usr/local/go/bin:/home/${USERNAME}/go/bin:/home/${USERNAME}/.local/bin:/home/${USERNAME}/.dotnet/tools
+ENV PATH $PATH:/usr/local/go/bin:/home/${USERNAME}/go/bin:/home/${USERNAME}/.local/bin:/home/${USERNAME}/.dotnet/tools:/opt/fluent-bit/bin
 
 ###
 # We intentionally create multiple layers so that they pull in parallel which improves startup time
@@ -55,9 +55,6 @@ RUN /bin/bash /scripts/azcli-debian.sh
 RUN /bin/bash /scripts/go-debian.sh
 RUN /bin/bash /scripts/dapr-debian.sh
 
-# install Radius
-RUN wget -q "https://get.radapp.dev/tools/rad/install.sh" -O - | /bin/bash
-
 # run local scripts
 RUN /bin/bash /scripts/dind-debian.sh
 
@@ -71,8 +68,13 @@ RUN wget -o /usr/local/share/ca-certificates/gd_bundle-g2-g1.crt https://certs.g
 # dotnet 6 is already installed
 RUN apt-get -y install --no-install-recommends dotnet-sdk-5.0
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
+# install fluent bit for debugging
+RUN curl https://packages.fluentbit.io/fluentbit.key | gpg --dearmor > /usr/share/keyrings/fluentbit-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/fluentbit-keyring.gpg] https://packages.fluentbit.io/debian/buster buster main" >> /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get -y install --no-install-recommends fluent-bit
+
+RUN apt-get upgrade -y && \
     apt-get autoremove -y && \
     apt-get clean -y
 
@@ -101,8 +103,8 @@ RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your 
 # docker pipe
 VOLUME [ "/var/lib/docker" ]
 
-# Setting the ENTRYPOINT to docker-init.sh will start up the Docker Engine 
-# inside the container "overrideCommand": false is set in devcontainer.json. 
+# Setting the ENTRYPOINT to docker-init.sh will start up the Docker Engine
+# inside the container "overrideCommand": false is set in devcontainer.json.
 # The script will also execute CMD if you need to alter startup behaviors.
 ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
 CMD [ "sleep", "infinity" ]
@@ -227,7 +229,7 @@ RUN rustup target add wasm32-unknown-unknown
 
 # install wasm-pack
 RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh && \
-    cargo install wasm-bindgen-cli 
+    cargo install wasm-bindgen-cli
 
 USER root
 
