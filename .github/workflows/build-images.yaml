@@ -1,4 +1,4 @@
-name: Build Codespace Containers
+name: Build Codespace Images
 
 on:
   schedule:
