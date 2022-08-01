@@ -31,6 +31,7 @@ apt-get -y install --no-install-recommends apt-utils dialog
 apt-get -y install --no-install-recommends coreutils gnupg2 ca-certificates apt-transport-https
 apt-get -y install --no-install-recommends software-properties-common make build-essential
 apt-get -y install --no-install-recommends git wget curl bash-completion jq gettext iputils-ping
+apt-get -y install --no-install-recommends tar g++ gcc libc6-dev pkg-config
 
 ARCHITECTURE="$(uname -m)"
 case $ARCHITECTURE in
@@ -54,13 +55,8 @@ chmod +x /usr/local/bin/jp
 
 echo "Updating config ..."
 echo -e "alias k='kubectl'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
-echo -e "alias kga='kubectl get all'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
-echo -e "alias kgaa='kubectl get all --all-namespaces'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
 echo -e "alias kaf='kubectl apply -f'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
 echo -e "alias kdelf='kubectl delete -f'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
-echo -e "alias kl='kubectl logs'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
-echo -e "alias kccc='kubectl config current-context'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
-echo -e "alias kcgc='kubectl config get-contexts'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
 echo -e "alias kj='kubectl exec -it jumpbox -- bash -l'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
 echo -e "alias kje='kubectl exec -it jumpbox -- '" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
 echo -e "alias ipconfig='ip -4 a show eth0 | grep inet | sed \"s/inet//g\" | sed \"s/ //g\" | cut -d / -f 1'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
