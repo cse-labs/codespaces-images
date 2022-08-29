@@ -32,7 +32,8 @@ RUN mkdir -p /home/${USERNAME}/.local/bin && \
     mkdir -p /home/${USERNAME}/.dapr/bin && \
     mkdir -p /home/${USERNAME}/.ssh && \
     mkdir -p /home/${USERNAME}/.oh-my-zsh/completions && \
-    mkdir -p /home/${USERNAME}/go/bin
+    mkdir -p /home/${USERNAME}/go/bin && \
+    chsh --shell /bin/zsh vscode
 
 # copy the stup scripts to the image
 COPY library-scripts/*.sh /scripts/
