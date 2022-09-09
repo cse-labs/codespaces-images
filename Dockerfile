@@ -46,7 +46,8 @@ RUN apt-get -y install --no-install-recommends software-properties-common make b
 # install github cli
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key 23F3D4EA75716059 && \
     apt-add-repository https://cli.github.com/packages && \
-    apt-get update
+    apt-get update && \
+    apt-get -y install --no-install-recommends gh
 
 # use scripts from: https://github.com/microsoft/vscode-dev-containers/tree/main/script-library
 # uncomment this if you use a base image other than a Codespaces image
