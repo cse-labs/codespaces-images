@@ -40,12 +40,13 @@ COPY library-scripts/*.sh /scripts/
 COPY local-scripts/*.sh /scripts/
 
 RUN apt-get update
-RUN apt-get -y install --no-install-recommends apt-utils dialog
-RUN apt-get -y install --no-install-recommends apt-transport-https ca-certificates
-RUN apt-get -y install --no-install-recommends curl git wget
-RUN apt-get -y install --no-install-recommends software-properties-common make build-essential
-RUN apt-get -y install --no-install-recommends jq bash-completion
-RUN apt-get -y install --no-install-recommends gettext iputils-ping dnsutils
+RUN apt-get -y install --no-install-recommends apt-utils dialog apt-transport-https ca-certificates curl git wget
+RUN apt-get -y install --no-install-recommends software-properties-common make build-essential jq bash-completion gettext iputils-ping dnsutils
+
+# install github cli
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key 23F3D4EA75716059 && \
+    apt-add-repository https://cli.github.com/packages && \
+    apt-get update
 
 # use scripts from: https://github.com/microsoft/vscode-dev-containers/tree/main/script-library
 # uncomment this if you use a base image other than a Codespaces image
@@ -147,13 +148,8 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     apt-get upgrade -y
 
-RUN apt-get install -y --no-install-recommends pkg-config libssl-dev
-RUN apt-get install -y --no-install-recommends gcc libc6-dev
-RUN apt-get install -y --no-install-recommends lldb python3-minimal libpython3.?
-RUN apt-get install -y --no-install-recommends python
-RUN apt-get install -y --no-install-recommends clang
-RUN apt-get install -y --no-install-recommends cmake
-RUN apt-get install -y --no-install-recommends musl-tools
+RUN apt-get install -y --no-install-recommends pkg-config libssl-dev gcc libc6-dev lldb python3-minimal libpython3.?
+RUN apt-get install -y --no-install-recommends python clang cmake musl-tools
 
 # install rust
 ENV RUSTUP_HOME=/usr/local/rustup \
@@ -235,7 +231,7 @@ RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh && \
 USER root
 
 # install node
-RUN /bin/bash /scripts/node-debian.sh
+RUN /bin/bash /scripts/node-debian.sh /usr/local/share/nvm v18
 
 RUN apt-get update
 RUN apt-get upgrade -y
