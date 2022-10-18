@@ -5,7 +5,15 @@ FROM ghcr.io/cse-labs/dind:latest
 # some images require specific values
 ARG USERNAME=vscode
 
-# install gh; update welcome message; chown home dir
+# update welcome message; chown home dir
 RUN echo "$(date +'%Y-%m-%d %H:%M:%S')    docker build start" >> "/home/${USERNAME}/status" && \
-    chown -R ${USERNAME}:${USERNAME} "/home/${USERNAME}" && \
-    echo "$(date +'%Y-%m-%d %H:%M:%S')    docker build complete" >> "/home/${USERNAME}/status"
+    mkdir -p "/home/${USERNAME}/.config/vscode-dev-containers" && \
+    mkdir -p /usr/local/etc/vscode-dev-containers && \
+    echo "👋 Welcome to Codespaces-Images!" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+    echo "" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+    echo "🔍 To explore PiB, open the README.md file" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+    echo "" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+    echo "cat /usr/local/etc/vscode-dev-containers/first-run-notice.txt" >> /etc/zsh/zshrc && \
+    touch "/home/${USERNAME}/.config/vscode-dev-containers/first-run-notice-already-displayed" && \
+    echo "$(date +'%Y-%m-%d %H:%M:%S')    docker build complete" >> "/home/${USERNAME}/status" && \
+    chown -R ${USERNAME}:${USERNAME} "/home/${USERNAME}"
