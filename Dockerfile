@@ -5,7 +5,8 @@ WORKDIR /root
 
 CMD [ "/bin/sh", "-c", "trap : TERM INT; sleep 9999999999d & wait" ]
 
-RUN apk update && apk add bash curl nano jq httpie && \
+RUN apk update && \
+    apk add bash curl nano jq httpie && \
     echo "alias ls='ls --color=auto'" >> /root/.profile && \
     echo "alias ll='ls -alF'" >> /root/.profile && \
     echo "alias la='ls -alF'" >> /root/.profile
@@ -67,9 +68,9 @@ RUN wget -o /usr/local/share/ca-certificates/gd_bundle-g2-g1.crt https://certs.g
     wget -o /usr/local/share/ca-certificates/gd_bundle-g4-g1.crt https://certs.godaddy.com/repository/gd_bundle-g4-g1.crt && \
     update-ca-certificates
 
-# install dotnet 5 for tool support
-# dotnet 6 is already installed
-RUN apt-get -y install --no-install-recommends dotnet-sdk-5.0
+# install dotnet 5 and 6 for tool support
+# dotnet 7 is already installed
+RUN apt-get -y install --no-install-recommends dotnet-sdk-5.0 dotnet-sdk-6.0
 
 # install fluent bit for debugging
 RUN curl https://packages.fluentbit.io/fluentbit.key | gpg --dearmor > /usr/share/keyrings/fluentbit-keyring.gpg && \
@@ -99,9 +100,10 @@ RUN dotnet tool install -g webvalidate && \
 USER root
 
 # customize first run message
-RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
-    && echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
-    && echo "👋 Welcome to the Docker-in-Docker image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+    echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+    echo "👋 Welcome to the Docker-in-Docker image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+    chmod +x /scripts
 
 # docker pipe
 VOLUME [ "/var/lib/docker" ]
@@ -128,9 +130,9 @@ RUN /bin/bash /scripts/kind-k3d-debian.sh
 RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
 # customize first run message
-RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
-    && echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
-    && echo "👋 Welcome to the k3d Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+    echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+    echo "👋 Welcome to the k3d Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
 
 # update the container
 RUN apt-get update
@@ -199,9 +201,9 @@ RUN rustup target add x86_64-unknown-linux-musl
 USER root
 
 # customize first run message
-RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
-    && echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
-    && echo "👋 Welcome to the k3d and Rust Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+    echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+    echo "👋 Welcome to the k3d and Rust Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
 
 #######################
 ### Build k3d-wasm image from k3d-rust
@@ -243,6 +245,6 @@ RUN apt-get autoremove -y && \
 RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
 # customize first run message
-RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
-    && echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt \
-    && echo "👋 Welcome to the k3d Rust WebAssembly Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+    echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+    echo "👋 Welcome to the k3d Rust WebAssembly Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
