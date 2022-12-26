@@ -68,9 +68,9 @@ RUN wget -o /usr/local/share/ca-certificates/gd_bundle-g2-g1.crt https://certs.g
     wget -o /usr/local/share/ca-certificates/gd_bundle-g4-g1.crt https://certs.godaddy.com/repository/gd_bundle-g4-g1.crt && \
     update-ca-certificates
 
-# install dotnet 5 and 6 for tool support
+# install dotnet 3.1, 5, and 6 for tool support
 # dotnet 7 is already installed
-RUN apt-get -y install --no-install-recommends dotnet-sdk-5.0 dotnet-sdk-6.0
+RUN apt-get -y install --no-install-recommends dotnet-sdk-5.0 dotnet-sdk-6.0 dotnet-sdk-3.1
 
 # install fluent bit for debugging
 RUN curl https://packages.fluentbit.io/fluentbit.key | gpg --dearmor > /usr/share/keyrings/fluentbit-keyring.gpg && \
