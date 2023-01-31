@@ -11,7 +11,7 @@ RUN echo "$(date +'%Y-%m-%d %H:%M:%S')    docker build start" >> "/home/${USERNA
     mkdir -p /usr/local/etc/vscode-dev-containers && \
     echo "👋 Welcome to Codespaces-Images!" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
     echo "" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
-    echo "🔍 To explore PiB, open the README.md file" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+    echo "🔍 To explore, open the README.md file" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
     echo "" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
     echo "cat /usr/local/etc/vscode-dev-containers/first-run-notice.txt" >> /etc/zsh/zshrc && \
     touch "/home/${USERNAME}/.config/vscode-dev-containers/first-run-notice-already-displayed" && \
