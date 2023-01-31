@@ -69,7 +69,7 @@ fi
 echo "Installing K9s ..."
 mkdir -p /home/${USERNAME}/.k9s
 K9S_VERSION=$(basename "$(curl -fsSL -o /dev/null -w "%{url_effective}" https://github.com/derailed/k9s/releases/latest)")
-curl -Lo ./k9s.tar.gz https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_Linux_x86_64.tar.gz
+curl -Lo ./k9s.tar.gz https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_Linux_amd64.tar.gz
 mkdir k9s
 tar xvzf k9s.tar.gz -C ./k9s
 chmod 755 ./k9s/k9s
