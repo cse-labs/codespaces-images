@@ -56,7 +56,7 @@ chmod +x /usr/local/bin/jp
 echo "Updating config ..."
 echo -e "alias k='kubectl'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
 echo -e "alias kaf='kubectl apply -f'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
-echo -e "alias kaf='kubectl apply -k'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
+echo -e "alias kak='kubectl apply -k'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
 echo -e "alias kdelf='kubectl delete -f'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
 echo -e "alias kj='kubectl exec -it jumpbox -- bash -l'" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
 echo -e "alias kje='kubectl exec -it jumpbox -- '" | tee -a /etc/zsh/zshrc >> /etc/bash.bashrc
