@@ -64,8 +64,6 @@ RUN /bin/bash /scripts/dind-debian.sh
 
 # install GoDaddy CA certs
 RUN wget -o /usr/local/share/ca-certificates/gd_bundle-g2-g1.crt https://certs.godaddy.com/repository/gd_bundle-g2-g1.crt && \
-    wget -o /usr/local/share/ca-certificates/gd_bundle-g3-g1.crt https://certs.godaddy.com/repository/gd_bundle-g3-g1.crt && \
-    wget -o /usr/local/share/ca-certificates/gd_bundle-g4-g1.crt https://certs.godaddy.com/repository/gd_bundle-g4-g1.crt && \
     update-ca-certificates
 
 # install dotnet 3.1, 5, and 6 for tool support
