@@ -44,6 +44,7 @@ COPY local-scripts/*.sh /scripts/
 RUN apt-get update
 RUN apt-get -y install --no-install-recommends apt-utils dialog apt-transport-https ca-certificates curl git wget openssl
 RUN apt-get -y install --no-install-recommends software-properties-common make build-essential jq bash-completion gettext iputils-ping dnsutils
+RUN apt-get upgrade -y
 
 # install github cli
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key 23F3D4EA75716059 && \
