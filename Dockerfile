@@ -42,7 +42,7 @@ COPY library-scripts/*.sh /scripts/
 COPY local-scripts/*.sh /scripts/
 
 RUN apt-get update
-RUN apt-get -y install --no-install-recommends apt-utils dialog apt-transport-https ca-certificates curl git wget
+RUN apt-get -y install --no-install-recommends apt-utils dialog apt-transport-https ca-certificates curl git wget openssl
 RUN apt-get -y install --no-install-recommends software-properties-common make build-essential jq bash-completion gettext iputils-ping dnsutils
 
 # install github cli
