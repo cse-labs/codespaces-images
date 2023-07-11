@@ -62,10 +62,6 @@ RUN /bin/bash /scripts/dapr-debian.sh
 # run local scripts
 RUN /bin/bash /scripts/dind-debian.sh
 
-# install GoDaddy CA certs
-RUN wget -o /usr/local/share/ca-certificates/gd_bundle-g2-g1.crt https://certs.godaddy.com/repository/gd_bundle-g2-g1.crt && \
-    update-ca-certificates
-
 # install dotnet 3.1, 5, and 6 for tool support
 # dotnet 7 is already installed
 RUN apt-get -y install --no-install-recommends dotnet-sdk-5.0 dotnet-sdk-6.0 dotnet-sdk-3.1
@@ -96,6 +92,10 @@ RUN dotnet tool install -g webvalidate && \
     git config --global diff.colorMoved zebra
 
 USER root
+
+# install GoDaddy CA certs
+# RUN wget -o /usr/local/share/ca-certificates/gd_bundle-g2-g1.crt https://certs.godaddy.com/repository/gd_bundle-g2-g1.crt
+# RUN update-ca-certificates
 
 # customize first run message
 RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
