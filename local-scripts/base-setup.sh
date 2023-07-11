@@ -4,6 +4,24 @@
 # Licensed under the MIT License. See https://go.microsoft.com/fwlink/?linkid=2090316 for license information.
 #-------------------------------------------------------------------------------------------------------------
 
+if [ "$(id -u)" -ne 0 ]; then
+    echo 'Script must be run as root. Use sudo, su, or add "USER root" to your Dockerfile before running this script.'
+    echo "(!) $0 failed!"
+    exit 1
+fi
+
+mkdir -p /home/${USERNAME}/bin
+mkdir -p /home/${USERNAME}/.local/bin
+mkdir -p /home/${USERNAME}/.dotnet/tools
+mkdir -p /home/${USERNAME}/.dapr/bin
+mkdir -p /home/${USERNAME}/.ssh
+mkdir -p /home/${USERNAME}/.oh-my-zsh/completions
+mkdir -p /home/${USERNAME}/go/bin
+chsh --shell /bin/zsh vscode
+
+# customize first run message
+echo "👋 Welcome to the Docker-in-Docker Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+
 apt-get update
 apt-get -y install --no-install-recommends apt-utils dialog apt-transport-https ca-certificates curl git wget openssl
 apt-get -y install --no-install-recommends software-properties-common make build-essential jq bash-completion gettext iputils-ping dnsutils
@@ -25,12 +43,6 @@ apt-get -y install --no-install-recommends dotnet-sdk-5.0 dotnet-sdk-6.0 dotnet-
 
 # this fails the first time
 curl https://certs.godaddy.com/repository/gd_bundle-g2.crt
-
-if [ "$(id -u)" -ne 0 ]; then
-    echo 'Script must be run as root. Use sudo, su, or add "USER root" to your Dockerfile before running this script.'
-    echo "(!) $0 failed!"
-    exit 1
-fi
 
 # install GoDaddy CA certs
 mkdir -p /usr/local/share/ca-certificates

@@ -28,34 +28,24 @@ ENV PATH $PATH:/usr/local/go/bin:/home/${USERNAME}/go/bin:/home/${USERNAME}/bin:
 # We intentionally create multiple layers so that they pull in parallel which improves startup time
 ###
 
-RUN mkdir -p /home/${USERNAME}/bin && \
-    mkdir -p /home/${USERNAME}/.local/bin && \
-    mkdir -p /home/${USERNAME}/.dotnet/tools && \
-    mkdir -p /home/${USERNAME}/.dapr/bin && \
-    mkdir -p /home/${USERNAME}/.ssh && \
-    mkdir -p /home/${USERNAME}/.oh-my-zsh/completions && \
-    mkdir -p /home/${USERNAME}/go/bin && \
-    chsh --shell /bin/zsh vscode
-
 # copy the stup scripts to the image
 COPY library-scripts/*.sh /scripts/
 COPY local-scripts/*.sh /scripts/
 
-# run local script
+# run base setup
 RUN /bin/bash /scripts/base-setup.sh
 
 # use scripts from: https://github.com/microsoft/vscode-dev-containers/tree/main/script-library
-# uncomment this if you use a base image other than a Codespaces image
-# RUN /bin/bash /scripts/common-debian.sh
 RUN /bin/bash /scripts/docker-in-docker-debian.sh
 RUN /bin/bash /scripts/kubectl-helm-debian.sh
 RUN /bin/bash /scripts/azcli-debian.sh
 RUN /bin/bash /scripts/go-debian.sh
 RUN /bin/bash /scripts/dapr-debian.sh
 
-# run local scripts
+# run docker-in-docker script
 RUN /bin/bash /scripts/dind-debian.sh
 
+# run upgrade
 RUN apt-get upgrade -y && \
     apt-get autoremove -y && \
     apt-get clean -y
@@ -76,10 +66,6 @@ RUN dotnet tool install -g webvalidate && \
     git config --global diff.colorMoved zebra
 
 USER root
-
-# customize first run message
-RUN echo "👋 Welcome to the Docker-in-Docker Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
-    chmod +x /scripts
 
 # docker pipe
 VOLUME [ "/var/lib/docker" ]
