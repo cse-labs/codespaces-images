@@ -86,15 +86,13 @@ ARG USERNAME=vscode
 RUN /bin/bash /scripts/kind-k3d-debian.sh
 
 # change ownership of the home directory
-RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
-
-# customize first run message
-RUN echo "👋 Welcome to the k3d Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME} && \
+    echo "👋 Welcome to the k3d Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
 
 # update the container
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get autoremove -y && \
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get autoremove -y && \
     apt-get clean -y
 
 #######################
@@ -133,9 +131,9 @@ RUN set -eux; \
     rm rustup-init; \
     chmod -R a+w $RUSTUP_HOME $CARGO_HOME;
 
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get autoremove -y && \
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get autoremove -y && \
     apt-get clean -y
 
 # change ownership of the home directory
@@ -164,8 +162,8 @@ FROM k3d-rust as k3d-wasm
 
 ARG USERNAME=vscode
 
-RUN apt-get update
-RUN apt-get upgrade -y
+RUN apt-get update && \
+    apt-get upgrade -y
 
 # change ownership of the home directory
 RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
@@ -174,8 +172,8 @@ WORKDIR /home/${USERNAME}
 USER ${USERNAME}
 
 # update rust
-RUN rustup self update
-RUN rustup update
+RUN rustup self update && \
+    rustup update
 
 # install WebAssembly target
 RUN rustup target add wasm32-unknown-unknown
@@ -189,13 +187,11 @@ USER root
 # install node
 RUN /bin/bash /scripts/node-debian.sh /usr/local/share/nvm v18
 
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get autoremove -y && \
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get autoremove -y && \
     apt-get clean -y
 
 # change ownership of the home directory
-RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
-
-# customize first run message
-RUN echo "👋 Welcome to the k3d Rust WebAssembly Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME} && \
+    echo "👋 Welcome to the k3d Rust WebAssembly Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
