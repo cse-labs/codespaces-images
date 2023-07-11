@@ -95,9 +95,9 @@ RUN dotnet tool install -g webvalidate && \
 USER root
 
 # install GoDaddy CA certs
-RUN mkdir -p /usr/local/share/ca-certificates && \ 
-    wget -o /usr/local/share/ca-certificates/gd_bundle-g2.crt https://certs.godaddy.com/repository/gd_bundle-g2.crt
-RUN update-ca-certificates
+# RUN mkdir -p /usr/local/share/ca-certificates && \ 
+#     wget -o /usr/local/share/ca-certificates/gd_bundle-g2.crt https://certs.godaddy.com/repository/gd_bundle-g2.crt
+# RUN update-ca-certificates
 
 # customize first run message
 RUN echo "👋 Welcome to the Docker-in-Docker Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
