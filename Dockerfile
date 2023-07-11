@@ -41,18 +41,8 @@ RUN mkdir -p /home/${USERNAME}/bin && \
 COPY library-scripts/*.sh /scripts/
 COPY local-scripts/*.sh /scripts/
 
-RUN apt-get update
-RUN apt-get -y install --no-install-recommends apt-utils dialog apt-transport-https ca-certificates curl git wget openssl
-RUN apt-get -y install --no-install-recommends software-properties-common make build-essential jq bash-completion gettext iputils-ping dnsutils
-
 # run local script
-RUN /bin/bash /scripts/godaddy-certs.sh
-
-# install github cli
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key 23F3D4EA75716059 && \
-    apt-add-repository https://cli.github.com/packages && \
-    apt-get update && \
-    apt-get -y install --no-install-recommends gh
+RUN /bin/bash /scripts/base-setup.sh
 
 # use scripts from: https://github.com/microsoft/vscode-dev-containers/tree/main/script-library
 # uncomment this if you use a base image other than a Codespaces image
@@ -65,16 +55,6 @@ RUN /bin/bash /scripts/dapr-debian.sh
 
 # run local scripts
 RUN /bin/bash /scripts/dind-debian.sh
-
-# install dotnet 3.1, 5, and 6 for tool support
-# dotnet 7 is already installed
-RUN apt-get -y install --no-install-recommends dotnet-sdk-5.0 dotnet-sdk-6.0 dotnet-sdk-3.1
-
-# install fluent bit for debugging
-RUN curl https://packages.fluentbit.io/fluentbit.key | gpg --dearmor > /usr/share/keyrings/fluentbit-keyring.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/fluentbit-keyring.gpg] https://packages.fluentbit.io/debian/buster buster main" >> /etc/apt/sources.list && \
-    apt-get update && \
-    apt-get -y install --no-install-recommends fluent-bit
 
 RUN apt-get upgrade -y && \
     apt-get autoremove -y && \
