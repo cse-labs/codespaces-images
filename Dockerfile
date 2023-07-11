@@ -22,13 +22,14 @@ ARG USER_GID=$USER_UID
 
 # configure apt-get
 ENV DEBIAN_FRONTEND noninteractive
-ENV PATH $PATH:/usr/local/go/bin:/home/${USERNAME}/go/bin:/home/${USERNAME}/.local/bin:/home/${USERNAME}/.dotnet/tools:/opt/fluent-bit/bin
+ENV PATH $PATH:/usr/local/go/bin:/home/${USERNAME}/go/bin:/home/${USERNAME}/bin:/home/${USERNAME}/.local/bin:/home/${USERNAME}/.dotnet/tools:/opt/fluent-bit/bin
 
 ###
 # We intentionally create multiple layers so that they pull in parallel which improves startup time
 ###
 
-RUN mkdir -p /home/${USERNAME}/.local/bin && \
+RUN mkdir -p /home/${USERNAME}/bin && \
+    mkdir -p /home/${USERNAME}/.local/bin && \
     mkdir -p /home/${USERNAME}/.dotnet/tools && \
     mkdir -p /home/${USERNAME}/.dapr/bin && \
     mkdir -p /home/${USERNAME}/.ssh && \
@@ -94,13 +95,12 @@ RUN dotnet tool install -g webvalidate && \
 USER root
 
 # install GoDaddy CA certs
-RUN wget -o /usr/local/share/ca-certificates/gd_bundle-g2.crt https://certs.godaddy.com/repository/gd_bundle-g2.crt
+RUN mkdir -p /usr/local/share/ca-certificates && \ 
+    wget -o /usr/local/share/ca-certificates/gd_bundle-g2.crt https://certs.godaddy.com/repository/gd_bundle-g2.crt
 RUN update-ca-certificates
 
 # customize first run message
-RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
-    echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
-    echo "👋 Welcome to the Docker-in-Docker image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
+RUN echo "👋 Welcome to the Docker-in-Docker Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
     chmod +x /scripts
 
 # docker pipe
@@ -118,9 +118,6 @@ FROM dind as k3d
 
 ARG USERNAME=vscode
 
-ENV DEBIAN_FRONTEND noninteractive
-ENV PATH $PATH:/usr/local/go/bin:/usr/local/istio/bin:/home/${USERNAME}/go/bin:/home/${USERNAME}/.local/bin:/home/${USERNAME}/.dotnet/tools:/home/${USERNAME}/.dapr/bin
-
 # install kind / k3d
 RUN /bin/bash /scripts/kind-k3d-debian.sh
 
@@ -128,9 +125,7 @@ RUN /bin/bash /scripts/kind-k3d-debian.sh
 RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
 # customize first run message
-RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
-    echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
-    echo "👋 Welcome to the k3d Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+RUN echo "👋 Welcome to the k3d Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
 
 # update the container
 RUN apt-get update
@@ -143,8 +138,6 @@ RUN apt-get autoremove -y && \
 FROM k3d as k3d-rust
 
 ARG USERNAME=vscode
-
-ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && \
     apt-get upgrade -y
@@ -199,9 +192,7 @@ RUN rustup target add x86_64-unknown-linux-musl
 USER root
 
 # customize first run message
-RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
-    echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
-    echo "👋 Welcome to the k3d and Rust Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+RUN echo "👋 Welcome to the k3d and Rust Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
 
 #######################
 ### Build k3d-wasm image from k3d-rust
@@ -243,6 +234,4 @@ RUN apt-get autoremove -y && \
 RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
 # customize first run message
-RUN echo "👋 Welcome to Codespaces! You are on a custom image defined in your devcontainer.json file.\n" > /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
-    echo "🔍 To explore VS Code to its fullest, search using the Command Palette (Cmd/Ctrl + Shift + P)\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
-    echo "👋 Welcome to the k3d Rust WebAssembly Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+RUN echo "👋 Welcome to the k3d Rust WebAssembly Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt
