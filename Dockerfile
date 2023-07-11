@@ -44,7 +44,9 @@ COPY local-scripts/*.sh /scripts/
 RUN apt-get update
 RUN apt-get -y install --no-install-recommends apt-utils dialog apt-transport-https ca-certificates curl git wget openssl
 RUN apt-get -y install --no-install-recommends software-properties-common make build-essential jq bash-completion gettext iputils-ping dnsutils
-RUN apt-get upgrade -y
+
+# run local script
+RUN /bin/bash /scripts/godaddy-certs.sh
 
 # install github cli
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key 23F3D4EA75716059 && \
@@ -94,11 +96,6 @@ RUN dotnet tool install -g webvalidate && \
     git config --global diff.colorMoved zebra
 
 USER root
-
-# install GoDaddy CA certs
-RUN mkdir -p /usr/local/share/ca-certificates
-RUN curl -kLo /usr/local/share/ca-certificates/gd_bundle-g2.crt https://certs.godaddy.com/repository/gd_bundle-g2.crt
-RUN update-ca-certificates
 
 # customize first run message
 RUN echo "👋 Welcome to the Docker-in-Docker Codespaces image\n" >> /usr/local/etc/vscode-dev-containers/first-run-notice.txt && \
